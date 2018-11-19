@@ -68,7 +68,7 @@ def print_bold(text):
 	print(color.BOLD + text + color.END)
 
 # --------------------
-# Core logic functions
+# Core iOS IPA classes
 # -------------------- 
 
 class IosBuildInfo:
@@ -88,6 +88,10 @@ class IosIpa:
 		self.tmp_dir = os.getcwd() + '/_tmp/ipa_' + self.name
 		self.unzip()
 
+		self.infoplist_filepath = self.get_info_plist()
+		self.buildInfo = self.get_build_infos()
+		self.iconsArray = self.get_icon_files()
+
 
 	# Unzip IPA to TMP directory
 	def unzip(self):
@@ -101,43 +105,81 @@ class IosIpa:
 		shutil.rmtree(os.getcwd() + '/_tmp/')
 
 
+	# Get info plist
+	def get_info_plist(self):
 
+		payload_dir = self.tmp_dir + '/Payload'
+		
+		# find file
+		infoplist_filepath = None
 
+		for app_file in os.listdir(payload_dir):
+			if app_file.endswith('.app'):
+				for app_subfile in os.listdir(payload_dir + '/' + app_file):
+					if app_subfile == 'Info.plist':
+						infoplist_filepath = payload_dir + '/' + app_file + '/' + app_subfile
 
+		return infoplist_filepath
 
-def get_info_plist(ipa_dir_path):
+	# Get build infos
+	def get_build_infos(self):
 
-	payload_dir = ipa_dir_path + '/Payload'
-	
-	# find file
-	infoplist_filepath = None
+		# Required params
+		bundleIdString = None
+		versionNumber = None
+		buildNumber = None
+		appIcon = None
 
-	for app_file in os.listdir(payload_dir):
-		if app_file.endswith('.app'):
-			for app_subfile in os.listdir(payload_dir + '/' + app_file):
-				if app_subfile == 'Info.plist':
-					infoplist_filepath = payload_dir + '/' + app_file + '/' + app_subfile
+		# Get plist file
+		plist_content = None
+		with open(self.infoplist_filepath) as plist:
+			plist_content = plist.readlines()
+		
+		# Find the required info
+		index = 0;
+		for plist_line in plist_content:
 
-	return infoplist_filepath
+			if "CFBundleIdentifier" in plist_line:
+				bundleIdString = get_content_from_string_xml(plist_content[index + 1])
 
-def get_icon_files(ipa_dir_path, icon_name):
+			if "CFBundleShortVersionString" in plist_line:
+				versionNumber = get_content_from_string_xml(plist_content[index + 1])
 
-	payload_dir = ipa_dir_path + '/Payload'
-	
-	# find files
-	icon_filepath_array = []
+			if "CFBundleVersion" in plist_line:
+				buildNumber = get_content_from_string_xml(plist_content[index + 1])
 
-	if icon_name == None:
+			if "CFBundleIconFiles" in plist_line:
+				appIcon = get_content_from_string_xml(plist_content[index + 2])
+
+			index = index + 1
+
+		return IosBuildInfo(bundleIdString, versionNumber, buildNumber, appIcon)
+
+	# Get icon files
+	def get_icon_files(self):
+
+		payload_dir = self.tmp_dir + '/Payload'
+		
+		# find files
+		icon_filepath_array = []
+
+		if self.buildInfo.appIconName == None:
+			return icon_filepath_array
+
+		for app_file in os.listdir(payload_dir):
+			if app_file.endswith('.app'):
+				for app_subfile in os.listdir(payload_dir + '/' + app_file):
+					if app_subfile.startswith(self.buildInfo.appIconName):
+						appicon_filepath = payload_dir + '/' + app_file + '/' + app_subfile
+						icon_filepath_array.append(appicon_filepath)
+
 		return icon_filepath_array
 
-	for app_file in os.listdir(payload_dir):
-		if app_file.endswith('.app'):
-			for app_subfile in os.listdir(payload_dir + '/' + app_file):
-				if app_subfile.startswith(icon_name):
-					appicon_filepath = payload_dir + '/' + app_file + '/' + app_subfile
-					icon_filepath_array.append(appicon_filepath)
 
-	return icon_filepath_array
+
+# --------------------
+# Plist file parser extension
+# -------------------- 
 
 # Returning content form a <string>ABC</string> plist line
 def get_content_from_string_xml(line):
@@ -146,63 +188,6 @@ def get_content_from_string_xml(line):
 	content = content.split('</string>')[0]
 	return content
 
-
-def get_build_infos(plist_path):
-
-	# Required params
-	bundleIdString = None
-	versionNumber = None
-	buildNumber = None
-	appIcon = None
-
-	# Get plist file
-	plist_content = None
-	with open(plist_path) as plist:
-		plist_content = plist.readlines()
-	
-	# Find the required info
-	index = 0;
-	for plist_line in plist_content:
-
-		if "CFBundleIdentifier" in plist_line:
-			bundleIdString = get_content_from_string_xml(plist_content[index + 1])
-
-		if "CFBundleShortVersionString" in plist_line:
-			versionNumber = get_content_from_string_xml(plist_content[index + 1])
-
-		if "CFBundleVersion" in plist_line:
-			buildNumber = get_content_from_string_xml(plist_content[index + 1])
-
-		if "CFBundleIconFiles" in plist_line:
-			appIcon = get_content_from_string_xml(plist_content[index + 2])
-
-		index = index + 1
-
-	return IosBuildInfo(bundleIdString, versionNumber, buildNumber, appIcon)
-
-
-def process_ipa(ipa):
-
-	tmp_dir = os.getcwd() + '/_tmp/ipa_' + ipa.name
-
-	# Find infos
-	# ipa.unzip(tmp_dir)
-
-	infoplist_path = get_info_plist(ipa_dir_path = tmp_dir)
-	build_infos = get_build_infos(infoplist_path)
-	icon_array = get_icon_files(ipa_dir_path = tmp_dir, icon_name = build_infos.appIconName)
-
-	# Print and Ask
-	print_info(build_infos, ipa.name, icon_array)
-	if yes_no_question("Would you like to release the app with these settings?"):
-		print_bold('ACTION')
-		print("Woooo - Your App is released.")
-	else:
-		print_bold('ACTION')
-		print("Woooo - We saved your release. Please change the ipa and release it again.")
-
-	# Delete tmp folder
-	ipa.delete_tmp()
 
 
 def main():
@@ -213,8 +198,21 @@ def main():
 	# Process .ipa files
 	for ipa_file in os.listdir(ipa_directory):
 		if ipa_file.endswith('.ipa'):
-			ipa_info = IosIpa(ipa_name = ipa_file, ipa_path = ipa_directory + '/' + ipa_file)
-			process_ipa(ipa = ipa_info)
+			
+			# Create IPA
+			ipa = IosIpa(ipa_name = ipa_file, ipa_path = ipa_directory + '/' + ipa_file)
+			
+			# Print and Ask
+			print_info(ipa.buildInfo, ipa.name, ipa.iconsArray)
+			if yes_no_question("Would you like to release the app with these settings?"):
+				print_bold('ACTION')
+				print("Woooo - Your App is released.")
+			else:
+				print_bold('ACTION')
+				print("Woooo - We saved your release. Please change the ipa and release it again.")
+
+			# Delete tmp folder
+			ipa.delete_tmp()
 	
 
 if __name__ == '__main__':
