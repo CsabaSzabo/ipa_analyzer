@@ -36,7 +36,7 @@ def print_info(build_infos, ipa_name, icon_array):
 	appIconName = build_infos.appIconName
 
 	if appIconName == None:
-		appIconName = "No app was icon"
+		appIconName = "No app icon was found"
 
 	print('Bundle Identifier: '+bundleId)
 	print('Version number: '+versionNum)
@@ -184,9 +184,15 @@ class IosIpa:
 # Returning content form a <string>ABC</string> plist line
 def get_content_from_string_xml(line):
 
-	content = line.split('<string>')[1]
-	content = content.split('</string>')[0]
-	return content
+	if 'string' in line:
+		content = line.replace('<string>', '')
+		content = content.replace('</string>', '')
+		content = content.replace('\n', '')
+		content = content.replace(' ', '')	
+
+		return content
+	else:
+		return None
 
 
 
