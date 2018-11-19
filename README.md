@@ -15,10 +15,10 @@ An `.ipa` file is basically a `.zip` file, containing the app `Payload`.
 
 Info could be found in: `IPA_NAME.ipa (.zip) / Payload / APP_NAME.app / Info.plist`
 
-`Bundle Identifier` - `CFBundleIdentifier`
-`Version number` - `CFBundleShortVersionString`
-`Build number` - `CFBundleVersion`
-`App Icon` - `CFBundleIcons > CFBundlePrimaryIcon > CFBundleIconFiles`
+- `Bundle Identifier` - `CFBundleIdentifier`
+- `Version number` - `CFBundleShortVersionString`
+- `Build number` - `CFBundleVersion`
+- `App Icon` - `CFBundleIcons > CFBundlePrimaryIcon > CFBundleIconFiles`
 
 **Tasks:**
 - Copy, rename and unzip the Bundle .ipa
