@@ -11,20 +11,20 @@ Running the tests: `python3 analyser-test.py`
 Running the solution: `python3 analyser.py`
 
 ## Private or Public
-I made this repository private, as I wouldn't publicate your Trial Day task. Otherwise, I would made this repository public.
+I made this repository **private**, as I wouldn't publicate your Trial Day task. Otherwise, I would made this repository public.
 
 ## iOS IPA info
 
 An `.ipa` file is basically a `.zip` file, containing the app `Payload`.
 
-### IPA File structure
-
-Info could be found in: `IPA_NAME.ipa (.zip) / Payload / APP_NAME.app / Info.plist`
+The required information could be found in: `IPA_NAME.ipa (.zip) / Payload / APP_NAME.app / Info.plist`
 
 - `Bundle Identifier` - `CFBundleIdentifier`
 - `Version number` - `CFBundleShortVersionString`
 - `Build number` - `CFBundleVersion`
 - `App Icon` - `CFBundleIcons > CFBundlePrimaryIcon > CFBundleIconFiles`
+
+## Detailed solution
 
 **Tasks:**
 - Copy, rename and unzip the Bundle .ipa
@@ -38,3 +38,10 @@ Info could be found in: `IPA_NAME.ipa (.zip) / Payload / APP_NAME.app / Info.pli
 Now I would try to use IPA analysers like:
 - https://github.com/bitrise-io/ipa_analyzer
 - https://github.com/mogui/pyipa
+
+**Next steps**
+- Try to integrate an IPA file parser
+- Write tests for accepting/denying the results
+- Displaying the images, however it's not possbile in terminal, could open a default image viewer
+
+
