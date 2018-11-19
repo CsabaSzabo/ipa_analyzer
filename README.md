@@ -4,6 +4,12 @@ https://gist.github.com/godrei/e8b1a90919c253f6db94ed08c361961d
 # Solution
 This repository contains the solution, which was written in Python3, as that's the most comfortable scripting language for me.
 
+## How to run it
+
+Running the tests: `python3 analyser-test.py`
+
+Running the solution: `python3 analyser.py`
+
 ## Private or Public
 I made this repository private, as I wouldn't publicate your Trial Day task. Otherwise, I would made this repository public.
 
