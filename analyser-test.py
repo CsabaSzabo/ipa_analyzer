@@ -3,7 +3,7 @@ from analyser import IosBuildInfo, IosIpa
 
 class TestBuildInfo(unittest.TestCase):
 	"""
-	Test class to test ``get_build_infos`` function
+	Test IosIpa class
 	"""
 
 	def test_all_values_are_defined(self):
