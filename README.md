@@ -30,6 +30,7 @@ The required information could be found in: `IPA_NAME.ipa (.zip) / Payload / APP
 - Copy, rename and unzip the Bundle .ipa
 - Get and parse Info.plist
 - Write data and ask for usage
+- ~~Write tests~~
 
 **Solution:**
 - Parsing the info.plist manually, however it was a wrong decision due to the custom format of the plist file
