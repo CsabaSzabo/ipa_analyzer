@@ -67,21 +67,6 @@ def yes_no_question(question):
 def print_bold(text):
 	print(color.BOLD + text + color.END)
 
-
-# --------------------
-# File handling functions
-# --------------------
-
-def unzip_ipa(file_path, zip_directory):
-
-	zip_ref = zipfile.ZipFile(file_path, 'r')
-	zip_ref.extractall(zip_directory)
-	zip_ref.close()
-
-def delete_tmp(directory_path):
-
-	shutil.rmtree(os.getcwd() + '/_tmp/')
-
 # --------------------
 # Core logic functions
 # -------------------- 
@@ -94,11 +79,28 @@ class IosBuildInfo:
 		self.buildNumber = buildNumber
 		self.appIconName = appIconName
 
-class IosIpaInfo:
+class IosIpa:
 
 	def __init__(self, ipa_name, ipa_path):
 		self.name = ipa_name
 		self.path = ipa_path
+
+		self.tmp_dir = os.getcwd() + '/_tmp/ipa_' + self.name
+		self.unzip()
+
+
+	# Unzip IPA to TMP directory
+	def unzip(self):
+		zip_ref = zipfile.ZipFile(self.path, 'r')
+		zip_ref.extractall(self.tmp_dir)
+		zip_ref.close()
+
+
+	# Delete TMP directory
+	def delete_tmp(self):
+		shutil.rmtree(os.getcwd() + '/_tmp/')
+
+
 
 
 
@@ -184,7 +186,8 @@ def process_ipa(ipa):
 	tmp_dir = os.getcwd() + '/_tmp/ipa_' + ipa.name
 
 	# Find infos
-	unzip_ipa(file_path = ipa.path, zip_directory = tmp_dir)
+	# ipa.unzip(tmp_dir)
+
 	infoplist_path = get_info_plist(ipa_dir_path = tmp_dir)
 	build_infos = get_build_infos(infoplist_path)
 	icon_array = get_icon_files(ipa_dir_path = tmp_dir, icon_name = build_infos.appIconName)
@@ -199,7 +202,7 @@ def process_ipa(ipa):
 		print("Woooo - We saved your release. Please change the ipa and release it again.")
 
 	# Delete tmp folder
-	delete_tmp(tmp_dir)
+	ipa.delete_tmp()
 
 
 def main():
@@ -210,7 +213,7 @@ def main():
 	# Process .ipa files
 	for ipa_file in os.listdir(ipa_directory):
 		if ipa_file.endswith('.ipa'):
-			ipa_info = IosIpaInfo(ipa_name = ipa_file, ipa_path = ipa_directory + '/' + ipa_file)
+			ipa_info = IosIpa(ipa_name = ipa_file, ipa_path = ipa_directory + '/' + ipa_file)
 			process_ipa(ipa = ipa_info)
 	
 
