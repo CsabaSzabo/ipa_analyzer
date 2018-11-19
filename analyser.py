@@ -67,17 +67,6 @@ def yes_no_question(question):
 def print_bold(text):
 	print(color.BOLD + text + color.END)
 
-# --------------------
-# Core logic functions
-# -------------------- 
-
-class IosBuildInfo:
-	
-	def __init__(self, bundleId, versionNumber, buildNumber, appIconName):
-		self.bundleId = bundleId
-		self.versionNumber = versionNumber
-		self.buildNumber = buildNumber
-		self.appIconName = appIconName
 
 # --------------------
 # File handling functions
@@ -92,6 +81,26 @@ def unzip_ipa(file_path, zip_directory):
 def delete_tmp(directory_path):
 
 	shutil.rmtree(os.getcwd() + '/_tmp/')
+
+# --------------------
+# Core logic functions
+# -------------------- 
+
+class IosBuildInfo:
+
+	def __init__(self, bundleId, versionNumber, buildNumber, appIconName):
+		self.bundleId = bundleId
+		self.versionNumber = versionNumber
+		self.buildNumber = buildNumber
+		self.appIconName = appIconName
+
+class IosIpaInfo:
+
+	def __init__(self, ipa_name, ipa_path):
+		self.name = ipa_name
+		self.path = ipa_path
+
+
 
 
 def get_info_plist(ipa_dir_path):
@@ -170,18 +179,18 @@ def get_build_infos(plist_path):
 	return IosBuildInfo(bundleIdString, versionNumber, buildNumber, appIcon)
 
 
-def process_ipa(ipa_path, ipa_name):
+def process_ipa(ipa):
 
-	tmp_dir = os.getcwd() + '/_tmp/ipa_' + ipa_name
+	tmp_dir = os.getcwd() + '/_tmp/ipa_' + ipa.name
 
 	# Find infos
-	unzip_ipa(file_path = ipa_path, zip_directory = tmp_dir)
+	unzip_ipa(file_path = ipa.path, zip_directory = tmp_dir)
 	infoplist_path = get_info_plist(ipa_dir_path = tmp_dir)
 	build_infos = get_build_infos(infoplist_path)
 	icon_array = get_icon_files(ipa_dir_path = tmp_dir, icon_name = build_infos.appIconName)
 
 	# Print and Ask
-	print_info(build_infos, ipa_name, icon_array)
+	print_info(build_infos, ipa.name, icon_array)
 	if yes_no_question("Would you like to release the app with these settings?"):
 		print_bold('ACTION')
 		print("Woooo - Your App is released.")
@@ -201,7 +210,8 @@ def main():
 	# Process .ipa files
 	for ipa_file in os.listdir(ipa_directory):
 		if ipa_file.endswith('.ipa'):
-			process_ipa(ipa_path = ipa_directory + '/' + ipa_file, ipa_name = ipa_file)
+			ipa_info = IosIpaInfo(ipa_name = ipa_file, ipa_path = ipa_directory + '/' + ipa_file)
+			process_ipa(ipa = ipa_info)
 	
 
 if __name__ == '__main__':
