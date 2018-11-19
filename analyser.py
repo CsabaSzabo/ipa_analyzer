@@ -69,7 +69,7 @@ def print_bold(text):
 
 # --------------------
 # Core iOS IPA classes
-# -------------------- 
+# --------------------
 
 class IosBuildInfo:
 
@@ -105,7 +105,7 @@ class IosIpa:
 		shutil.rmtree(os.getcwd() + '/_tmp/')
 
 
-	# Get info plist
+	# Get info plist filepath
 	def get_info_plist(self):
 
 		payload_dir = self.tmp_dir + '/Payload'
@@ -121,7 +121,7 @@ class IosIpa:
 
 		return infoplist_filepath
 
-	# Get build infos
+	# Get build infos as IosBuildInfo object
 	def get_build_infos(self):
 
 		# Required params
@@ -155,7 +155,7 @@ class IosIpa:
 
 		return IosBuildInfo(bundleIdString, versionNumber, buildNumber, appIcon)
 
-	# Get icon files
+	# Return an array of App icon file names
 	def get_icon_files(self):
 
 		payload_dir = self.tmp_dir + '/Payload'
@@ -179,7 +179,7 @@ class IosIpa:
 
 # --------------------
 # Plist file parser extension
-# -------------------- 
+# --------------------
 
 # Returning content form a <string>ABC</string> plist line
 def get_content_from_string_xml(line):
@@ -189,11 +189,9 @@ def get_content_from_string_xml(line):
 		content = content.replace('</string>', '')
 		content = content.replace('\n', '')
 		content = content.replace(' ', '')	
-
 		return content
 	else:
 		return None
-
 
 
 def main():
