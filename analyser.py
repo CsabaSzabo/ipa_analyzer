@@ -5,7 +5,6 @@ import os				# file handling
 import zipfile			# zipping
 import shutil			# file handling2
 import xmltodict		# xml parsing
-from PIL import Image 	# image showing
 
 
 # --------------------
