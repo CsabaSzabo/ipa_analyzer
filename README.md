@@ -13,13 +13,20 @@ It lists the most important values of a `.ipa` file:
 
 ## How to use it
 
-Running the solution: `python3 analyser.py`
+Running the solution:
+```python
+python3 ipa_analyzer.py PATH_TO_IPA
+```
 
 ## Contribution guideline
 
-Running the tests: `python3 analyser-test.py`
+- Clone the repository
+- Run tests `python3 test_ipa_analyzer.py`
+- Change code and update tests
+- Submit a Pull request
 
 
-Now I would try to use IPA analysers like:
+## Similar projects 
+
 - https://github.com/bitrise-io/ipa_analyzer
 - https://github.com/mogui/pyipa

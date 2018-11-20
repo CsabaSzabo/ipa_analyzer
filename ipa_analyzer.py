@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import os				# file handling
-import zipfile			# zipping
 import shutil			# file handling2
-import xmltodict		# xml parsing
-
+import zipfile			# zipping
+import argparse			# arguments
 
 # --------------------
 # Printing functions and classes
@@ -22,11 +21,14 @@ class color:
    UNDERLINE = '\033[4m'
    END = '\033[0m'
 
-def print_info(build_infos, ipa_name, icon_array):
+def print_bold(text):
+	print(color.BOLD + text + color.END)
+
+def print_info(build_infos, ipa_name):
 
 	print()
 	print('+------------------------------------------------------------------------------+')
-	print('| IPA Analyser - '+ipa_name+'                                                                ')
+	print('| IPA Analyzer - '+ipa_name+'                                                                ')
 	print('+------------------------------------------------------------------------------+')
 
 	bundleId = build_infos.bundleId
@@ -41,30 +43,10 @@ def print_info(build_infos, ipa_name, icon_array):
 	print('Version number: '+versionNum)
 	print('Build number: '+buildNum)
 	print('App icon name: '+appIconName)
-	
-	if len(icon_array):
-		print('App icons:')
-		for icon_path in icon_array:
-			print('   '+ icon_path)
-	
 
 	print('+------------------------------------------------------------------------------+')
 	print()
 
-def yes_no_question(question):
-	# from https://gist.github.com/garrettdreyfus/8153571
-	print(color.BOLD + 'QUESTION' + color.END)
-
-	reply = str(input(question+' (y/n): ')).lower().strip()
-	if reply[0] == 'y':
-		return True
-	if reply[0] == 'n':
-		return False
-	else:
-		return yes_no_question("Uhhhh... please enter ")
-
-def print_bold(text):
-	print(color.BOLD + text + color.END)
 
 # --------------------
 # Core iOS IPA classes
@@ -80,9 +62,10 @@ class IosBuildInfo:
 
 class IosIpa:
 
-	def __init__(self, ipa_name, ipa_path):
-		self.name = ipa_name
+	def __init__(self, ipa_path):
+		
 		self.path = ipa_path
+		self.name = ipa_path.rsplit('/', 1)[1]
 
 		self.tmp_dir = os.getcwd() + '/_tmp/ipa_' + self.name
 		self.unzip()
@@ -192,30 +175,28 @@ def get_content_from_string_xml(line):
 	else:
 		return None
 
+# --------------------
+# Main
+# --------------------
 
 def main():
 
-	# Find files in directory
-	ipa_directory = os.getcwd() + '/trial_excercise/'
+	# Process arguments
+	ipafile_path = ''
 
-	# Process .ipa files
-	for ipa_file in os.listdir(ipa_directory):
-		if ipa_file.endswith('.ipa'):
-			
-			# Create IPA
-			ipa = IosIpa(ipa_name = ipa_file, ipa_path = ipa_directory + '/' + ipa_file)
-			
-			# Print and Ask
-			print_info(ipa.buildInfo, ipa.name, ipa.iconsArray)
-			if yes_no_question("Would you like to release the app with these settings?"):
-				print_bold('ACTION')
-				print("Woooo - Your App is released.")
-			else:
-				print_bold('ACTION')
-				print("Woooo - We saved your release. Please change the ipa and release it again.")
+	parser = argparse.ArgumentParser()
+	parser.add_argument("ipapath", help="Absolute Path of the IPA file")
+	args = parser.parse_args()
+	ipafile_path = args.ipapath
 
-			# Delete tmp folder
-			ipa.delete_tmp()
+	# Create IPA
+	ipa = IosIpa(ipa_path = ipafile_path)
+	
+	# Print and Ask
+	print_info(ipa.buildInfo, ipa.name)
+	
+	# Delete tmp folder
+	ipa.delete_tmp()
 	
 
 if __name__ == '__main__':
