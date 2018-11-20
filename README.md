@@ -1,48 +1,25 @@
-# Task
-https://gist.github.com/godrei/e8b1a90919c253f6db94ed08c361961d
+# Problem to solve
+For App Store iOS app submission, you have to export an `.ipa` file, which could be uploaded to the App Store.
+Validating information from this `.ipa` file is not easy by hand. This script solves this problem.
 
-# Solution
-This repository contains the solution, which was written in Python3, as that's the most comfortable scripting language for me.
+It lists the most important values of a `.ipa` file:
 
-## How to run it
+| Value             | .ipa value key                                          | Notes                                        |
+|-------------------|---------------------------------------------------------|----------------------------------------------|
+| Bundle Identifier | CFBundleIdentifier                                      | The ID of the app                            |
+| Version number    | CFBundleShortVersionString                              | This is the visible version number for users |
+| Build number      | CFBundleVersion                                         | This is the internal build number of the app |
+| App Icon name     | CFBundleIcons > CFBundlePrimaryIcon > CFBundleIconFiles | App Store app icon name                      |
 
-Running the tests: `python3 analyser-test.py`
+## How to use it
 
 Running the solution: `python3 analyser.py`
 
-## Private or Public
-I made this repository **private**, as I wouldn't publicate your Trial Day task. Otherwise, I would made this repository public.
+## Contribution guideline
 
-## iOS IPA info
+Running the tests: `python3 analyser-test.py`
 
-An `.ipa` file is basically a `.zip` file, containing the app `Payload`.
-
-The required information could be found in: `IPA_NAME.ipa (.zip) / Payload / APP_NAME.app / Info.plist`
-
-- `Bundle Identifier` - `CFBundleIdentifier`
-- `Version number` - `CFBundleShortVersionString`
-- `Build number` - `CFBundleVersion`
-- `App Icon` - `CFBundleIcons > CFBundlePrimaryIcon > CFBundleIconFiles`
-
-## Detailed solution
-
-**Tasks:**
-- Copy, rename and unzip the Bundle .ipa
-- Get and parse Info.plist
-- Write data and ask for usage
-- ~~Write tests~~
-
-**Solution:**
-- Parsing the info.plist manually, however it was a wrong decision due to the custom format of the plist file
-- I solved parsing for the given cases, however it doesn't handle every plist case
 
 Now I would try to use IPA analysers like:
 - https://github.com/bitrise-io/ipa_analyzer
 - https://github.com/mogui/pyipa
-
-**Next steps**
-- Try to integrate an IPA file parser
-- Write tests for accepting/denying the results
-- Displaying the images, however it's not possbile in terminal, could open a default image viewer
-
-
